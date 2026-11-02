@@ -1,0 +1,75 @@
+# Dependencies
+/node_modules
+/vendor
+
+# Environment & Sensitive Credentials
+.env
+.env.backup
+.env.production
+.env.*
+!.env.example
+/auth.json
+*.key
+/storage/*.key
+
+# Build & Compiled Assets
+/public/build
+/public/hot
+/public/storage
+/public/fonts-manifest.dev.json
+
+# Cache & Temporary Storage
+/.phpunit.cache
+.phpunit.result.cache
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/pail
+/storage/logs/*
+!/storage/logs/.gitignore
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Databases
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Virtualization & Local Dev Configs
+Homestead.json
+Homestead.yaml
+
+# IDEs & Editor Files
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+.phpactor.json
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# AI Agents & Assistants (Workspace specific)
+/.agents
+/.amp
+/.claude
+/.codex
+/.cursor
+/.factory
+/.grok
+/.junie
+/.kiro
+/.pi
+/.mcp.json
+/AGENTS.md
+/CLAUDE.md
+/boost.json
+/opencode.json
+/opencode.jsonc
