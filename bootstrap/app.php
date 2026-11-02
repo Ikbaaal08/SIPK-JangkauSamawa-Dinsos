@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnsureRegistrationIsEnabled;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => CheckRole::class,
+            'registration.enabled' => EnsureRegistrationIsEnabled::class,
+        ]);
+
+        $middleware->web(append: [
+            EnsureRegistrationIsEnabled::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

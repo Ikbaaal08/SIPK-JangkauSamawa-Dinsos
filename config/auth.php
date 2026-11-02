@@ -114,4 +114,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Self Registration Configuration
+    |--------------------------------------------------------------------------
+    |
+    | When set to false, self-registration via public web routes is disabled
+    | and visitors attempting to access registration will be redirected to login.
+    |
+    */
+
+    'registration_enabled' => (bool) env('REGISTRATION_ENABLED', true),
+
 ];
