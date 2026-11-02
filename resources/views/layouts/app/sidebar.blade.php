@@ -21,7 +21,32 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group heading="Menu Utama" class="grid">
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->isSuperAdmin())
+                        <flux:sidebar.item
+                            icon="home"
+                            :href="route('admin.dashboard')"
+                            :current="request()->routeIs('admin.dashboard')"
+                            wire:navigate
+                        >
+                            Dashboard
+                        </flux:sidebar.item>
+                        <flux:sidebar.item
+                            icon="tag"
+                            :href="route('admin.categories.index')"
+                            :current="request()->routeIs('admin.categories.*')"
+                            wire:navigate
+                        >
+                            Kategori
+                        </flux:sidebar.item>
+                        <flux:sidebar.item
+                            icon="cpu-chip"
+                            :href="route('admin.features.index')"
+                            :current="request()->routeIs('admin.features.*')"
+                            wire:navigate
+                        >
+                            Kelola Fitur
+                        </flux:sidebar.item>
+                    @elseif (auth()->user()->isAdmin())
                         <flux:sidebar.item
                             icon="home"
                             :href="route('admin.dashboard')"
@@ -29,6 +54,14 @@
                             wire:navigate
                         >
                             Dashboard Admin
+                        </flux:sidebar.item>
+                        <flux:sidebar.item
+                            icon="tag"
+                            :href="route('admin.categories.index')"
+                            :current="request()->routeIs('admin.categories.*')"
+                            wire:navigate
+                        >
+                            Kategori
                         </flux:sidebar.item>
                     @elseif (auth()->user()->isPetugasPenerima())
                         <flux:sidebar.item
@@ -39,6 +72,14 @@
                         >
                             Dashboard Penerima
                         </flux:sidebar.item>
+                        <flux:sidebar.item
+                            icon="document-text"
+                            :href="route('petugas.dispositions.index')"
+                            :current="request()->routeIs('petugas.dispositions.*')"
+                            wire:navigate
+                        >
+                            Disposisi Bidang
+                        </flux:sidebar.item>
                     @elseif (auth()->user()->isKepalaDinas())
                         <flux:sidebar.item
                             icon="home"
@@ -48,6 +89,14 @@
                         >
                             Dashboard Kepala Dinas
                         </flux:sidebar.item>
+                        <flux:sidebar.item
+                            icon="document-text"
+                            :href="route('kepala-dinas.dispositions.index')"
+                            :current="request()->routeIs('kepala-dinas.dispositions.*')"
+                            wire:navigate
+                        >
+                            Disposisi Aduan
+                        </flux:sidebar.item>
                     @elseif (auth()->user()->isPetugasPelaksana())
                         <flux:sidebar.item
                             icon="home"
@@ -56,6 +105,14 @@
                             wire:navigate
                         >
                             Dashboard Pelaksana
+                        </flux:sidebar.item>
+                        <flux:sidebar.item
+                            icon="clipboard-document-check"
+                            :href="route('pelaksana.dispositions.index')"
+                            :current="request()->routeIs('pelaksana.dispositions.*')"
+                            wire:navigate
+                        >
+                            Tugas Disposisi
                         </flux:sidebar.item>
                     @endif
                 </flux:sidebar.group>

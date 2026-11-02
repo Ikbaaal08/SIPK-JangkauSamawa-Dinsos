@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\EnsurePublicTrackingIsEnabled;
 use App\Http\Middleware\EnsureRegistrationIsEnabled;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => CheckRole::class,
             'registration.enabled' => EnsureRegistrationIsEnabled::class,
+            'public_tracking.enabled' => EnsurePublicTrackingIsEnabled::class,
         ]);
 
         $middleware->web(append: [

@@ -51,6 +51,34 @@ class UserFactory extends Factory
         ]);
     }
 
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'super_admin',
+        ]);
+    }
+
+    public function kadis(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'kadis',
+        ]);
+    }
+
+    public function kabag(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'kabag',
+        ]);
+    }
+
+    public function petugas(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'petugas',
+        ]);
+    }
+
     public function petugasPenerima(): static
     {
         return $this->state(fn (array $attributes) => [

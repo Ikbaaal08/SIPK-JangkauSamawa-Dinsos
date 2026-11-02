@@ -17,6 +17,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'bidang',
         'phone',
         'email_verified_at',
     ];
@@ -45,41 +46,47 @@ class User extends Authenticatable implements MustVerifyEmail
     public function roleLabel(): string
     {
         return match ($this->role) {
+            'super_admin' => 'Super Admin',
             'admin' => 'Administrator',
-            'petugas_penerima' => 'Petugas Penerima',
-            'kepala_dinas' => 'Kepala Dinas',
-            'petugas_pelaksana' => 'Petugas Pelaksana',
+            'kabag', 'petugas_penerima' => 'Petugas Penerima',
+            'kadis', 'kepala_dinas' => 'Kepala Dinas',
+            'petugas', 'petugas_pelaksana' => 'Petugas Pelaksana',
             default => 'Pengguna',
         };
     }
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'super_admin'], true);
     }
 
     public function isPetugasPenerima(): bool
     {
-        return $this->role === 'petugas_penerima';
+        return in_array($this->role, ['petugas_penerima', 'kabag'], true);
     }
 
     public function isKepalaDinas(): bool
     {
-        return $this->role === 'kepala_dinas';
+        return in_array($this->role, ['kepala_dinas', 'kadis'], true);
     }
 
     public function isPetugasPelaksana(): bool
     {
-        return $this->role === 'petugas_pelaksana';
+        return in_array($this->role, ['petugas_pelaksana', 'petugas'], true);
     }
 
     public function dashboardRoute(): string
     {
         return match ($this->role) {
-            'admin' => route('admin.dashboard'),
-            'petugas_penerima' => route('petugas.dashboard'),
-            'kepala_dinas' => route('kepala-dinas.dashboard'),
-            'petugas_pelaksana' => route('pelaksana.dashboard'),
+            'super_admin', 'admin' => route('admin.dashboard'),
+            'kabag', 'petugas_penerima' => route('petugas.dashboard'),
+            'kadis', 'kepala_dinas' => route('kepala-dinas.dashboard'),
+            'petugas', 'petugas_pelaksana' => route('pelaksana.dashboard'),
             default => route('dashboard'),
         };
     }

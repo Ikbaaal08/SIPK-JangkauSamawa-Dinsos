@@ -7,6 +7,7 @@ use App\Actions\Auth\VerifyWhatsAppOtpAction;
 use App\DTOs\Auth\SendWhatsAppOtpDto;
 use App\DTOs\Auth\VerifyWhatsAppOtpDto;
 use App\Forms\Auth\VerifyOtpForm;
+use App\Services\FeatureService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -36,7 +37,7 @@ class VerifyWhatsApp extends Component
             return;
         }
 
-        if ($user->email_verified_at) {
+        if (! app(FeatureService::class)->isEnabled('email_verification') || $user->email_verified_at) {
             $this->redirect($user->dashboardRoute(), navigate: true);
 
             return;

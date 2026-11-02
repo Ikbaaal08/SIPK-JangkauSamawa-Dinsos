@@ -52,6 +52,24 @@
             </div>
         </form>
 
+        @if (app(\App\Services\FeatureService::class)->isEnabled('registration'))
+            <div class="text-center text-sm text-zinc-600 dark:text-zinc-400">
+                <span>Belum memiliki akun?</span>
+                <flux:link :href="route('register')" wire:navigate class="text-blue-600 hover:underline">
+                    Daftar akun baru
+                </flux:link>
+            </div>
+        @endif
+
+        @if (app(\App\Services\FeatureService::class)->isEnabled('public_tracking'))
+            <div class="text-center text-sm text-zinc-600 dark:text-zinc-400">
+                <span>Warga ingin cek status aduan?</span>
+                <flux:link :href="route('public.tracking.index')" wire:navigate class="text-blue-600 hover:underline">
+                    Lacak Aduan di sini
+                </flux:link>
+            </div>
+        @endif
+
         <div class="text-xs text-center text-zinc-500 dark:text-zinc-400">
             Pemerintah Kabupaten Sumbawa — Dinas Sosial
         </div>

@@ -1,111 +1,354 @@
-<div class="space-y-6">
-    <!-- Welcome Header -->
-    <div class="flex flex-col gap-3 rounded-2xl bg-white p-6 shadow-xs border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2">
-                <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                    Dashboard Kepala Dinas Sosial
-                </h1>
-                <flux:badge color="emerald" size="sm">Kepala Dinas</flux:badge>
+<div class="space-y-8">
+    <!-- Breadcrumb & Welcome Header -->
+    <div class="space-y-2">
+        <nav class="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+            <span>Pimpinan</span>
+            <flux:icon name="chevron-right" class="size-3" />
+            <span class="font-semibold text-blue-600 dark:text-blue-400">Dashboard</span>
+        </nav>
+
+        <div class="flex flex-col gap-3 rounded-2xl bg-white p-6 shadow-xs border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800 sm:flex-row sm:items-center sm:justify-between">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                        Dashboard Kepala Dinas Sosial
+                    </h1>
+                    <flux:badge color="blue" size="sm">Pimpinan</flux:badge>
+                </div>
+                <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                    Selamat bertugas, <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ auth()->user()->name }}</span>. Pantau progres penanganan aduan masyarakat dan berikan arahan disposisi kebijakan.
+                </p>
             </div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                Selamat datang, <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ auth()->user()->name }}</span>. Tinjau aduan masyarakat dan berikan arahan disposisi kepada petugas pelaksana.
-            </p>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                <flux:icon name="calendar" class="size-4" />
-                {{ now()->translatedFormat('d F Y') }}
-            </span>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                    <flux:icon name="calendar" class="size-4" />
+                    {{ now()->translatedFormat('d F Y') }}
+                </span>
+            </div>
         </div>
     </div>
 
-    <!-- 4 Statistic Cards -->
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    @php
+        $statusBadgeClasses = [
+            'baru' => 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800',
+            'diproses' => 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
+            'diteruskan' => 'bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800',
+            'didisposisikan' => 'bg-zinc-100 text-zinc-800 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700',
+            'ditindaklanjuti' => 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
+            'selesai' => 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800',
+            'ditolak' => 'bg-red-100 text-red-800 border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-800',
+        ];
+
+        $statusLabels = [
+            'baru' => 'Baru',
+            'diproses' => 'Diproses',
+            'diteruskan' => 'Diteruskan',
+            'didisposisikan' => 'Didisposisikan',
+            'ditindaklanjuti' => 'Ditindaklanjuti',
+            'selesai' => 'Selesai',
+            'ditolak' => 'Ditolak',
+        ];
+    @endphp
+
+    <!-- Kadis: 6 Statistic Cards -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <x-statistic-card
             title="Total Aduan"
-            :value="$statistics->totalAduan"
+            :value="$statusCounts['total']"
             icon="document-text"
             color="blue"
-            description="Seluruh aduan kesejahteraan sosial"
+            description="Seluruh aduan masuk daerah"
         />
-
         <x-statistic-card
-            title="Perlu Disposisi"
-            :value="$statistics->aduanBaru"
-            icon="sparkles"
-            color="amber"
-            description="Aduan masuk yang menunggu arahan"
-            badge="Tindakan Pimpinan"
-        />
-
-        <x-statistic-card
-            title="Disposisi Berjalan"
-            :value="$statistics->aduanDiproses"
-            icon="arrow-path"
+            title="Aduan Diteruskan"
+            :value="$statusCounts['diteruskan']"
+            icon="paper-airplane"
             color="sky"
-            description="Sedang ditindaklanjuti tim pelaksana"
+            description="Menunggu arahan disposisi"
+            badge="Perlu Disposisi"
         />
-
+        <x-statistic-card
+            title="Aduan Didisposisikan"
+            :value="$statusCounts['didisposisikan']"
+            icon="folder"
+            color="zinc"
+            description="Telah didisposisikan ke pelaksana"
+            badge="Disposisi Berjalan"
+        />
+        <x-statistic-card
+            title="Aduan Ditindaklanjuti"
+            :value="$statusCounts['ditindaklanjuti']"
+            icon="wrench"
+            color="amber"
+            description="Proses penanganan lapangan"
+        />
         <x-statistic-card
             title="Aduan Selesai"
-            :value="$statistics->aduanSelesai"
+            :value="$statusCounts['selesai']"
             icon="check-circle"
             color="emerald"
-            description="Penyelesaian tuntas kesejahteraan warga"
+            description="Penanganan tuntas"
             badge="Tuntas"
+        />
+        <x-statistic-card
+            title="Aduan Ditolak"
+            :value="$statusCounts['ditolak']"
+            icon="x-circle"
+            color="red"
+            description="Aduan tidak memenuhi kriteria"
         />
     </div>
 
-    <!-- Pimpinan Overview -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900 lg:col-span-2">
-            <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Kewenangan & Pengawasan Disposisi</h2>
-            <p class="text-xs text-zinc-500">Pedoman pemberian disposisi penanganan pengaduan</p>
-
-            <div class="mt-5 space-y-4">
-                <div class="flex items-start gap-3 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/20">
-                    <flux:icon name="shield-check" class="size-5 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                    <div class="text-xs text-emerald-900 dark:text-emerald-300">
-                        <span class="font-semibold block mb-0.5">Penetapan Petugas Pelaksana yang Tepat</span>
-                        Pastikan disposisi ditugaskan kepada petugas pelaksana sesuai bidang dan kedekatan wilayah agar penanganan berlangsung cepat dan tepat sasaran.
-                    </div>
+    <!-- Ringkasan Aduan yang Perlu Diberi Disposisi -->
+    @if($actionNeededComplaints->isNotEmpty())
+        <div class="rounded-2xl border border-sky-200 bg-white shadow-xs dark:border-sky-900/50 dark:bg-zinc-900 overflow-hidden">
+            <div class="border-b border-sky-100 bg-sky-50/60 px-6 py-4 dark:border-sky-900/40 dark:bg-sky-950/20 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-sky-900 dark:text-sky-200 flex items-center gap-2">
+                        <flux:icon name="pencil-square" class="size-5 text-sky-600" />
+                        Ringkasan Aduan yang Perlu Diberi Disposisi
+                    </h2>
+                    <p class="text-xs text-sky-700 dark:text-sky-300">Aduan yang memerlukan arahan disposisi kebijakan dari Kepala Dinas</p>
                 </div>
+                <flux:badge color="sky" size="sm">{{ $actionNeededComplaints->count() }} Aduan</flux:badge>
+            </div>
 
-                <div class="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50/50 p-4 dark:border-blue-900/40 dark:bg-blue-950/20">
-                    <flux:icon name="clock" class="size-5 shrink-0 text-blue-600 dark:text-blue-400 mt-0.5" />
-                    <div class="text-xs text-blue-900 dark:text-blue-300">
-                        <span class="font-semibold block mb-0.5">Penetapan Tenggat Waktu (Due Date)</span>
-                        Setiap disposisi dianjurkan menyertakan batas waktu tindak lanjut (misal 3-7 hari kerja) demi kepastian pelayanan bagi warga Kabupaten Sumbawa.
-                    </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="border-b border-zinc-100 bg-zinc-50/50 text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/40">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold">Kode Tiket</th>
+                            <th class="px-6 py-3 font-semibold">Nama Pelapor</th>
+                            <th class="px-6 py-3 font-semibold">Kategori</th>
+                            <th class="px-6 py-3 font-semibold">Bidang</th>
+                            <th class="px-6 py-3 font-semibold">Status</th>
+                            <th class="px-6 py-3 font-semibold">Tanggal Aduan</th>
+                            <th class="px-6 py-3 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                        @foreach($actionNeededComplaints as $complaint)
+                            <tr class="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/50 transition">
+                                <td class="px-6 py-3.5 font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                                    {{ $complaint->ticket_code }}
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-800 dark:text-zinc-200">
+                                    {{ $complaint->reporter_name }}
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-600 dark:text-zinc-300">
+                                    {{ $complaint->category?->name ?? '-' }}
+                                </td>
+                                <td class="px-6 py-3.5 text-blue-600 dark:text-blue-400 font-medium">
+                                    {{ $complaint->bidang }}
+                                </td>
+                                <td class="px-6 py-3.5">
+                                    <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold {{ $statusBadgeClasses[$complaint->status] ?? 'bg-zinc-100 text-zinc-800' }}">
+                                        {{ $statusLabels[$complaint->status] ?? ucfirst($complaint->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-500 font-mono">
+                                    {{ ($complaint->reported_at ?? $complaint->created_at)->translatedFormat('d M Y, H:i') }}
+                                </td>
+                                <td class="px-6 py-3.5 text-right">
+                                    <a
+                                        href="{{ route('public.tracking.index', ['ticket' => $complaint->ticket_code]) }}"
+                                        class="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-900"
+                                    >
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
+    <!-- Daftar Aduan yang Melewati Batas Waktu Disposisi -->
+    @if($overdueComplaints->isNotEmpty())
+        <div class="rounded-2xl border border-red-200 bg-white shadow-xs dark:border-red-900/50 dark:bg-zinc-900 overflow-hidden">
+            <div class="border-b border-red-100 bg-red-50/70 px-6 py-4 dark:border-red-900/40 dark:bg-red-950/30 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-red-900 dark:text-red-200 flex items-center gap-2">
+                        <flux:icon name="clock" class="size-5 text-red-600" />
+                        Daftar Aduan Melewati Batas Waktu Disposisi
+                    </h2>
+                    <p class="text-xs text-red-700 dark:text-red-300">Aduan yang melampaui target tanggal penyelesaian disposisi lapangan</p>
                 </div>
+                <span class="inline-flex items-center gap-1 rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-xs">
+                    {{ $overdueComplaints->count() }} Terlambat
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="border-b border-zinc-100 bg-zinc-50/50 text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/40">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold">Kode Tiket</th>
+                            <th class="px-6 py-3 font-semibold">Nama Pelapor</th>
+                            <th class="px-6 py-3 font-semibold">Kategori</th>
+                            <th class="px-6 py-3 font-semibold">Batas Waktu</th>
+                            <th class="px-6 py-3 font-semibold">Status</th>
+                            <th class="px-6 py-3 font-semibold">Keterangan</th>
+                            <th class="px-6 py-3 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                        @foreach($overdueComplaints as $complaint)
+                            <tr class="hover:bg-red-50/30 dark:hover:bg-red-950/20 transition">
+                                <td class="px-6 py-3.5 font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                                    {{ $complaint->ticket_code }}
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-800 dark:text-zinc-200">
+                                    {{ $complaint->reporter_name }}
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-600 dark:text-zinc-300">
+                                    {{ $complaint->category?->name ?? '-' }}
+                                </td>
+                                <td class="px-6 py-3.5 font-mono text-red-600 dark:text-red-400 font-semibold">
+                                    {{ $complaint->active_due_date ?? '-' }}
+                                </td>
+                                <td class="px-6 py-3.5">
+                                    <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold {{ $statusBadgeClasses[$complaint->status] ?? 'bg-zinc-100 text-zinc-800' }}">
+                                        {{ $statusLabels[$complaint->status] ?? ucfirst($complaint->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3.5">
+                                    <span class="inline-flex items-center rounded-md bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-700 border border-red-200 dark:bg-red-950/60 dark:text-red-300 dark:border-red-800">
+                                        Terlambat
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3.5 text-right">
+                                    <a
+                                        href="{{ route('public.tracking.index', ['ticket' => $complaint->ticket_code]) }}"
+                                        class="inline-flex items-center gap-1 rounded-lg bg-zinc-100 px-2.5 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200"
+                                    >
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
+    <!-- Ringkasan Aduan Terbaru -->
+    <div class="rounded-2xl border border-zinc-200 bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+        <div class="border-b border-zinc-100 px-6 py-4 dark:border-zinc-800 flex items-center justify-between">
+            <div>
+                <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100">Ringkasan Aduan Terbaru</h2>
+                <p class="text-xs text-zinc-500">Seluruh aduan terbaru masuk dari masyarakat Kabupaten Sumbawa</p>
+            </div>
+            <flux:badge color="zinc" size="sm">Terbaru</flux:badge>
+        </div>
+
+        @if($recentComplaints->isEmpty())
+            <div class="p-8 text-center text-sm text-zinc-500">
+                Belum ada data aduan.
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="border-b border-zinc-100 bg-zinc-50/50 text-zinc-500 dark:border-zinc-800 dark:bg-zinc-800/40">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold">Kode Tiket</th>
+                            <th class="px-6 py-3 font-semibold">Nama Pelapor</th>
+                            <th class="px-6 py-3 font-semibold">Kategori</th>
+                            <th class="px-6 py-3 font-semibold">Bidang</th>
+                            <th class="px-6 py-3 font-semibold">Status</th>
+                            <th class="px-6 py-3 font-semibold">Tanggal Aduan</th>
+                            <th class="px-6 py-3 font-semibold text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                        @foreach($recentComplaints as $complaint)
+                            <tr class="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/50 transition">
+                                <td class="px-6 py-3.5 font-mono font-bold text-zinc-900 dark:text-zinc-100">
+                                    {{ $complaint->ticket_code }}
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-800 dark:text-zinc-200">
+                                    {{ $complaint->reporter_name }}
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-600 dark:text-zinc-300">
+                                    {{ $complaint->category?->name ?? '-' }}
+                                </td>
+                                <td class="px-6 py-3.5 text-blue-600 dark:text-blue-400 font-medium">
+                                    {{ $complaint->bidang }}
+                                </td>
+                                <td class="px-6 py-3.5">
+                                    <span class="inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold {{ $statusBadgeClasses[$complaint->status] ?? 'bg-zinc-100 text-zinc-800' }}">
+                                        {{ $statusLabels[$complaint->status] ?? ucfirst($complaint->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-3.5 text-zinc-500 font-mono">
+                                    {{ ($complaint->reported_at ?? $complaint->created_at)->translatedFormat('d M Y, H:i') }}
+                                </td>
+                                <td class="px-6 py-3.5 text-right">
+                                    <a
+                                        href="{{ route('public.tracking.index', ['ticket' => $complaint->ticket_code]) }}"
+                                        class="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-100 dark:bg-blue-950/60 dark:text-blue-300 dark:hover:bg-blue-900"
+                                    >
+                                        Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+
+    <!-- Charts: Status & Bidang -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Distribution by Status -->
+        <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100">Distribusi per Status</h2>
+            <p class="text-xs text-zinc-500 mb-4">Ringkasan status penanganan seluruh pengaduan</p>
+
+            <div class="space-y-3">
+                @php
+                    $total = max(1, $statusCounts['total']);
+                @endphp
+                @foreach(['baru' => 'Baru', 'diproses' => 'Diproses', 'diteruskan' => 'Diteruskan', 'didisposisikan' => 'Didisposisikan', 'ditindaklanjuti' => 'Ditindaklanjuti', 'selesai' => 'Selesai', 'ditolak' => 'Ditolak'] as $stKey => $stTitle)
+                    @php
+                        $cnt = $statusCounts[$stKey] ?? 0;
+                        $pct = round(($cnt / $total) * 100, 1);
+                    @endphp
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ $stTitle }}</span>
+                            <span class="font-mono text-zinc-500">{{ $cnt }} ({{ $pct }}%)</span>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                            <div class="h-full rounded-full {{ match($stKey) { 'baru' => 'bg-blue-500', 'diproses' => 'bg-amber-500', 'diteruskan' => 'bg-sky-500', 'didisposisikan' => 'bg-zinc-500', 'ditindaklanjuti' => 'bg-amber-600', 'selesai' => 'bg-emerald-500', 'ditolak' => 'bg-red-500', default => 'bg-zinc-400' } }}" style="width: {{ $pct }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
 
+        <!-- Distribution by Bidang -->
         <div class="rounded-2xl border border-zinc-200 bg-white p-6 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
-            <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Kinerja Pelayanan</h2>
-            <p class="text-xs text-zinc-500">Statistik penanganan dinas</p>
+            <h2 class="text-base font-bold text-zinc-900 dark:text-zinc-100">Distribusi per Bidang</h2>
+            <p class="text-xs text-zinc-500 mb-4">Sebaran beban disposisi antar bidang dinas sosial</p>
 
-            <div class="mt-5 space-y-4 text-xs">
-                <div class="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
-                    <span class="text-zinc-500">Aduan Siap Disposisi</span>
-                    <span class="font-bold text-amber-600 dark:text-amber-400">{{ $statistics->extra['siapDisposisi'] ?? 0 }} Aduan</span>
-                </div>
-                <div class="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800">
-                    <span class="text-zinc-500">Disposisi Aktif Lapangan</span>
-                    <span class="font-bold text-sky-600 dark:text-sky-400">{{ $statistics->extra['disposisiAktif'] ?? 0 }} Tugas</span>
-                </div>
-                <div class="flex items-center justify-between py-2">
-                    <span class="text-zinc-500">Tingkat Ketuntasan</span>
-                    @php
-                        $rate = $statistics->totalAduan > 0
-                            ? round(($statistics->aduanSelesai / $statistics->totalAduan) * 100, 1)
-                            : 0;
-                    @endphp
-                    <span class="font-bold text-emerald-600 dark:text-emerald-400">{{ $rate }}%</span>
-                </div>
+            <div class="space-y-4">
+                @foreach($bidangDistribution as $bKey => $bData)
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-medium text-zinc-700 dark:text-zinc-300">{{ $bData['label'] }}</span>
+                            <span class="font-mono text-zinc-500">{{ $bData['count'] }} ({{ $bData['percentage'] }}%)</span>
+                        </div>
+                        <div class="h-2.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                            <div class="h-full rounded-full {{ match($bKey) { 'perlindungan_jaminan_sosial' => 'bg-blue-600', 'rehabilitasi_sosial' => 'bg-emerald-600', 'pengembangan_kesejahteraan' => 'bg-amber-600', default => 'bg-zinc-500' } }}" style="width: {{ $bData['percentage'] }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
 </div>
-

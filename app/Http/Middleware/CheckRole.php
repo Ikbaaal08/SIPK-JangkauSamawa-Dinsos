@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\FeatureService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class CheckRole
             return redirect()->route('login');
         }
 
-        if (! $user->email_verified_at) {
+        if (app(FeatureService::class)->isEnabled('email_verification') && ! $user->email_verified_at) {
             return redirect()->route('verification.whatsapp');
         }
 

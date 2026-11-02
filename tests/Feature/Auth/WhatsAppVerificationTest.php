@@ -7,6 +7,7 @@ use App\DTOs\Auth\VerifyWhatsAppOtpDto;
 use App\Livewire\Auth\VerifyWhatsApp;
 use App\Models\User;
 use App\Models\WhatsappLog;
+use App\Services\FeatureService;
 use App\Services\FonnteService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -14,6 +15,8 @@ use Livewire\Livewire;
 
 beforeEach(function () {
     Cache::flush();
+    app(FeatureService::class)->enable('email_verification', 1);
+    app(FeatureService::class)->enable('email_verification', 1);
 });
 
 test('fonnte service sends request to api and records to whatsapp_logs', function () {

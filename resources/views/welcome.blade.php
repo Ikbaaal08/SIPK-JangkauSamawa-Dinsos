@@ -29,6 +29,15 @@
                             Dashboard
                         </a>
                     @else
+                        @if (Route::has('public.tracking.index') && app(\App\Services\FeatureService::class)->isEnabled('public_tracking'))
+                            <a
+                                href="{{ route('public.tracking.index') }}"
+                                class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-blue-600 font-semibold border border-transparent hover:border-blue-200 rounded-sm text-sm leading-normal"
+                            >
+                                Lacak Aduan
+                            </a>
+                        @endif
+
                         <a
                             href="{{ route('login') }}"
                             class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-sm leading-normal"
@@ -36,7 +45,7 @@
                             Masuk
                         </a>
 
-                        @if (Route::has('register') && config('auth.registration_enabled', true))
+                        @if (Route::has('register') && app(\App\Services\FeatureService::class)->isEnabled('registration'))
                             <a
                                 href="{{ route('register') }}"
                                 class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal">
